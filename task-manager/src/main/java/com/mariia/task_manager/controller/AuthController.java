@@ -1,6 +1,7 @@
 package com.mariia.task_manager.controller;
 
 
+import com.mariia.task_manager.model.Role;
 import com.mariia.task_manager.model.User;
 import com.mariia.task_manager.repository.UserRepository;
 import com.mariia.task_manager.security.JwtUtil;
@@ -32,6 +33,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User user){
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRole(Role.USER);
         userRepository.save(user);
         return ResponseEntity.ok(Map.of("message", "User registered successfully"));
 
@@ -42,7 +44,7 @@ public class AuthController {
         User dbUser = userRepository.findByUsername(user.getUsername())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
         if(passwordEncoder.matches(user.getPassword(), dbUser.getPassword())){
-            String token =jwtUtil.generateToken(dbUser.getUsername());
+            String token =jwtUtil.generateToken(dbUser.getUsername(), dbUser.getRole().name());
             return ResponseEntity.ok(Map.of("token", token));
         }
         return ResponseEntity.status(401).body(Map.of("message", "Invalid credentials"));
