@@ -1,8 +1,10 @@
 package com.mariia.task_manager.security;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -10,8 +12,13 @@ import java.util.Date;
 
 @Component
 public class JwtUtil {
-    private final String SECRET_KEY=System.getenv("JWT_SECRET_KEY");
-    private final long EXPIRATION_TIME = Long.parseLong(System.getenv("JWT_EXPIRATION_TIME"));
+    private final String SECRET_KEY;
+
+    public JwtUtil() {
+        Dotenv dotenv = Dotenv.load();  // Load .env file
+        SECRET_KEY = dotenv.get("JWT_SECRET_KEY");
+    }
+    private final long EXPIRATION_TIME = 86400000;
 
     private Key getSigningKey(){
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());//Converts the raw String key into a cryptographic key using HMAC SHA-256

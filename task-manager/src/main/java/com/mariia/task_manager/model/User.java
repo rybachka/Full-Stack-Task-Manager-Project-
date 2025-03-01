@@ -3,7 +3,7 @@ package com.mariia.task_manager.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import javax.management.relation.Role;
+
 
 
 @Entity
